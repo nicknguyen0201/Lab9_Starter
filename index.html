@@ -6,7 +6,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
-
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+<script>
+  window.TrackJS && TrackJS.install({ 
+    token: "b162e1f8d71046b3ac0d2d519342c8c6"
+    // for more configuration options, see https://docs.trackjs.com
+  });
+</script>
   <style>
     button {
       margin: 3px;
@@ -85,9 +91,14 @@
       <button>Console Trace</button>
       <button>Trigger a Global Error</button>
     </section>
+
+    <button id="update-btn">Update Status</button>
+      
+    <!--div id="status">Original status text</div-->
   </main>
 
   <script>
+    //Step 2 - Adding Buttons for Console Testing
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -101,7 +112,125 @@
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
-    // You may move this JS to another file if you wish
+    const log_btn  =document.querySelector('#error-btns button:nth-child(1)');
+    log_btn.addEventListener('click',()=>{console.log('I logged something')});
+    
+    const err_btn = document.querySelector('#error-btns button:nth-child(2)');
+    err_btn.addEventListener('click',()=>{console.error('This is an error, no joke')});
+
+    const count_btn  =document.querySelector('#error-btns button:nth-child(3)');
+    count_btn.addEventListener('click',()=>{console.count('I am counting')});
+
+    const warn_btn=document.querySelector('#error-btns button:nth-child(4)');
+    warn_btn.addEventListener('click',()=>{console.warn('did I turn off the oven already?')});
+
+    const x = 5;
+    const y=3;
+    const reason = 'x is expected to be less than y';
+    const assert_btn=document.querySelector('#error-btns button:nth-child(5)');
+    assert_btn.addEventListener('click',()=>{console.assert(x<y, {x,y,reason})});
+    
+    const clear_btn = document.querySelector('#error-btns button:nth-child(6)');
+    clear_btn.addEventListener('click',()=>{console.clear()});
+
+    const dir_btn = document.querySelector('#error-btns button:nth-child(7)');
+    dir_btn.addEventListener('click',()=>{console.dir(dir_btn)} );
+   
+    const dirxml_btn = document.querySelector('#error-btns button:nth-child(8)');
+    dirxml_btn.addEventListener('click',()=>{console.dirxml(dirxml_btn)} );
+
+    const grStart_btn = document.querySelector('#error-btns button:nth-child(9)');
+    grStart_btn.addEventListener('click',()=>{console.group('General Info')} );
+
+    const grEnd_btn = document.querySelector('#error-btns button:nth-child(10)');
+    grEnd_btn.addEventListener('click',()=>{console.groupEnd('General Info')} );
+
+    const people = [
+  {
+    first: 'René',
+    last: 'Magritte',
+  },
+  {
+    first: 'Chaim',
+    last: 'Soutine',
+    birthday: '18930113',
+  },
+  {
+    first: 'Henri',
+    last: 'Matisse',
+  }
+];
+  const table_btn = document.querySelector('#error-btns button:nth-child(11)');
+  table_btn.addEventListener('click',()=>{console.table(people)} );
+
+  const startTimer_btn = document.querySelector('#error-btns button:nth-child(12)');
+  startTimer_btn.addEventListener('click',()=>{console.log('time started') 
+  console.time()} );
+  const endTimer_btn = document.querySelector('#error-btns button:nth-child(13)');
+  endTimer_btn.addEventListener('click',()=>{console.timeEnd() } );
+
+  const trace_btn = document.querySelector('#error-btns button:nth-child(14)');
+  trace_btn.addEventListener('click',()=>{first()});
+  const first = () => { second(); };
+  const second = () => { third(); };
+  const third = () => { fourth(); };
+  const fourth = () => { console.trace(); };
+
+ // Step 3 - Trying Try/Catch
+  const updateBtn = document.getElementById('update-btn');
+  updateBtn.addEventListener('click', () => {
+  try {
+    // 1) Attempt to grab the #status element
+    const statusEl = document.getElementById('status');
+    if (!statusEl) {
+      // If it doesn’t exist (commented it), throw a new Error:
+      throw new Error('Status element not found in the DOM.');
+    }
+
+    // 2) If it does exist, update its text
+    statusEl.innerText = '✅ Status updated at ' + new Date().toLocaleTimeString();
+
+  } catch (err) {
+    // This runs only if we threw an Error above (or some other runtime error happened)
+    console.error('Caught an error:', err.message);
+    
+
+  } finally {
+    // Always runs, whether the try succeeded or the catch fired
+    console.log('Update-button click handler is done (whether success or failure).');
+  }
+    });
+
+  //Step 4 - Throw and Custom Errors
+  class ValidationError extends Error {
+  constructor(message) {
+    super(message); // (1)
+    this.name = "ValidationError"; // (2)
+  }
+}
+
+function test() {
+  console.log('custom error')
+  throw new ValidationError("Whoops!");
+}
+
+try {
+  test();
+} catch(err) {
+  console.log(err.message); // Whoops!
+  console.log(err.name); // ValidationError
+  console.log(err.stack); // a list of nested calls with line numbers for each
+}
+//Step 5 The Global Error handler and 3rd Party Tracking 
+ window.onerror = function (message, source, lineno, colno, errorObj) {
+      console.log("window.onerror caught, notify dev:", message);
+      return true;
+  };
+  const trigger_btn = document.querySelector('#error-btns button:nth-child(15)');
+  trigger_btn.addEventListener("click", () => {
+      nonExistentFunction();
+    });
+  TrackJS.track('Testing TrackJS!');
   </script>
 </body>
 
